@@ -35,16 +35,15 @@ def sys_info(conn):
 # Sending commands
 def send_commands(conn):
     while True:
-        command = input("Shell:> ")
-        conn.send(command.encode())
-        if command.lower() == 'exit':
-            break
-
-        results = conn.recv(20480).decode()
-        print(results)
-
-    conn.close()
-    server.close()
+        cmd = input(" ")
+        if cmd == "quit" or "exit":
+            conn.close()
+            server.close()
+            sys.exit()
+        if len(str.encode(cmd))>0:
+            conn.send(str.encode(cmd))
+            client_response = str(conn.recv(1024), "utf-8")
+            print(client_response, end="")
 
 
 def main():
